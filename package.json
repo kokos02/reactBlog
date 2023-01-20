@@ -1,7 +1,8 @@
 {
-  "dependencies": {
-    "react-quill": "^2.0.0",
-    "sas": "^3.0.4",
-    "sass": "^1.57.1"
-  }
+    "dependencies": {
+        "react-quill": "^2.0.0",
+        "sas": "^3.0.4",
+        "sass": "^1.57.1"
+    },
+    "proxy": "http://localhost:8800/api/"
 }
