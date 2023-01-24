@@ -1,8 +1,14 @@
 import React from "react";
 import Edit from "../img/edit.png";
 import Delete from "../img/delete.png";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import Menu from "../components/Menu";
+import moment from "moment";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
 
 const posts = [
   {
@@ -32,38 +38,63 @@ const posts = [
 ];
 
 const Single = () => {
+  const [post, setPosts] = useState({});
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const postId = location.pathname.split("/")[2];
+
+  const { currentUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`/posts/${postId}`);
+        setPosts(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [postId]);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/posts/${postId}`);
+      navigate("/");
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  };
+
+  const getText = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent;
+  };
+
   return (
     <div className="single">
       <div className="content">
-        <img src={posts[0].img} alt="" />
+        <img src={`../upload/${post?.img}`} alt="" />
         <div className="user">
-          <img src={posts[1].img} alt="" />
+          {post.userImg && <img src={post.userImg} alt="" />}
           <div className="info">
-            <span> John </span> <p> Posted 2 days ago </p>{" "}
+            <span> {post.username} </span>{" "}
+            <p> Posted {moment(post.date).fromNow()} </p>{" "}
           </div>{" "}
-          <div className="edit">
-            <Link to={`/write?edit=2`}>
-              <img src={Edit} alt="" />
-            </Link>{" "}
-            <img src={Delete} alt="" />
-          </div>{" "}
+          {currentUser.username === post.username && (
+            <div className="edit">
+              <Link to={`/write?edit=2`} state={post}>
+                <img src={Edit} alt="" />
+              </Link>{" "}
+              <img onClick={handleDelete} src={Delete} alt="" />
+            </div>
+          )}
         </div>{" "}
-        <h1>
-          Lorem ipsum dolor amet sin dolores freiowf nwifn vjerjg jhfreuijkn{" "}
-        </h1>{" "}
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.Lorem Ipsum has been the industry 's standard dummy text ever
-          since the 1500 s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book.It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged.It was popularised in the 1960 s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.{" "}
-        </p>{" "}
+        <h1>{post.title}</h1> {getText(post.desc)}
       </div>{" "}
-      <Menu />
+      <Menu cat={post.cat} />
     </div>
   );
 };
