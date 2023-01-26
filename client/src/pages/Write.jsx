@@ -37,7 +37,7 @@ const Write = () => {
             cat,
             img: file ? imgUrl : "",
           })
-        : await axios.post(`/posts/`, {
+        : await axios.post(`http://localhost:8800/api/posts/`, {
             title,
             desc: value,
             cat,
@@ -46,7 +46,7 @@ const Write = () => {
           });
       navigate("/");
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   };
 

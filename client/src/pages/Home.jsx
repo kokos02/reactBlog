@@ -14,7 +14,7 @@ const Home = () => {
         const res = await axios.get(`/posts${cat}`);
         setPosts(res.data);
       } catch (err) {
-        console.log(err);
+        console.log(err.response.data);
       }
     };
     fetchData();
@@ -59,7 +59,7 @@ const Home = () => {
         {posts.map((post) => (
           <div className="post" key={post.id}>
             <div className="img">
-              <img src={`../upload/${post.img}`} alt="" />
+              {post.img ? (<img src={`../upload/${post.img}`} alt="" />): <div> </div>}
             </div>{" "}
             <div className="content">
               <Link className="link" to={`/post/${post.id}`}>
