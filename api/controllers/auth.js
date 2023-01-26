@@ -45,19 +45,31 @@ export const login = (req, res) => {
         const token = jwt.sign({ id: data[0].id }, "jwtkey");
         const { password, ...other } = data[0];
 
+        res.cookie("name", "geeksforgeeks");
+
+        res.cookie("name22", "tobi", { path: "/" });
+
         res
-            .cookie("access_token", token)
+            .cookie("access_token", token, {
+                httpOnly: true,
+            })
             .status(200)
             .json(other);
+        console.log("ftasameextra");
     });
 };
 
 export const logout = (req, res) => {
     res
         .clearCookie("access_token", {
+            httpOnly: true,
             sameSite: "none",
             secure: true,
         })
         .status(200)
         .json("User has been logged out.");
+
+    res.clearCookie("name2", { path: "/" });
+
+    console.log("to logout000000");
 };
